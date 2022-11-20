@@ -9,7 +9,7 @@ To start off your statistical journey, you will encounter some commonly used reg
 * OnePassCov() :Covariance
 * RidgeRegression() :Ridge Regression
 
-# Package Install Instruction
+# Package Installation Instruction
 
 In your Rstudio, make sure you have installed devtools package.
 In the Console, type in the following:
