@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Introduction to Lazy Modeling (LM) Function Package</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to Lazy Modeling (LM) Function
+Package</h1>
+
+
+
+<p>To start off your statistical journey, you will encounter some
+commonly used regression models, this package is here to guide you
+through this. There is 3 main functions and 1 helper function in this
+package:</p>
+<ul>
+<li>SLM() :Simple Linear Regression<br />
+</li>
+<li>MultiLinearRegression() :Multiple Linear Regression<br />
+</li>
+<li>OnePassCov() :Covariance<br />
+</li>
+<li>RidgeRegression() :Ridge Regression</li>
+</ul>
+<p>This documentation will guide you through the detail of them one by
+one.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(LM)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bench)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: package &#39;bench&#39; was built under R version 4.2.2</span></span></code></pre></div>
+<div id="simple-linear-regression-with-slm" class="section level1">
+<h1>Simple Linear Regression with SLM()</h1>
+<p>SLM() allows you to perform simple linear regression with two main
+argument x and y, which are numeric vector.</p>
+<p>Given the simple linear regression: <span class="math inline">\(y = x
+\beta + intercept + \epsilon\)</span></p>
+<p>The function will return a list containing:</p>
+<ul>
+<li>intercept: A numeric value of the intercept for <span class="math inline">\(y = x \beta + intercept\)</span><br />
+</li>
+<li>beta.est A numeric value of estimated beta for <span class="math inline">\(y = x \beta + intercept\)</span><br />
+</li>
+<li>Std.Error A numeric value of standard error<br />
+</li>
+<li>t.value A numeric value of t-statistic<br />
+</li>
+<li>p.value A numeric value of p-values</li>
+</ul>
+<div id="slm-example" class="section level2">
+<h2>SLM() Example</h2>
+<p>Suppose you would like to investigate the association of the weight
+of the vehicle (wt) and fuel efficiency (mpg) in the mtcars dataset.
+Assuming all linear regression assumptions hold, then you have:</p>
+<p><span class="math inline">\(mpg = wt \beta + intercept
++\epsilon\)</span></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">##Load dataset</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(datasets)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(mtcars)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> mtcars<span class="sc">$</span>wt</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> mtcars<span class="sc">$</span>mpg</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">SLM</span>(x,y)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>fit</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $intercept</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 6.295128e-16</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $beta.est</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -5.344472</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Std.Error</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.559101</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $t.value</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -9.559044</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $p.value</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 1.293959e-10</span></span></code></pre></div>
+</div>
+<div id="slm-accurancy-and-efficiency-evalution" class="section level2">
+<h2>SLM() Accurancy and Efficiency Evalution</h2>
+<p>The function SLM() can be compare with the lm() function in the Base
+package.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">summary</span>(<span class="fu">lm</span>(y<span class="sc">~</span>x))</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>lmfit <span class="ot">&lt;-</span> <span class="fu">c</span>(b<span class="sc">$</span>coefficients[<span class="dv">1</span>,<span class="dv">1</span>], b<span class="sc">$</span>coefficients[<span class="dv">2</span>,])</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">unlist</span>(fit), lmfit)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(tab) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Outputs from LM&quot;</span>, <span class="st">&quot;Outputs from BASE&quot;</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(tab, <span class="at">caption =</span> <span class="st">&quot;Simple Linear Regression comparison: LM vs BASE&quot;</span>)</span></code></pre></div>
+<table>
+<caption>Simple Linear Regression comparison: LM vs BASE</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">Outputs from LM</th>
+<th align="right">Outputs from BASE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">intercept</td>
+<td align="right">0.000000</td>
+<td align="right">0.000000</td>
+</tr>
+<tr class="even">
+<td align="left">beta.est</td>
+<td align="right">-5.344472</td>
+<td align="right">-5.344472</td>
+</tr>
+<tr class="odd">
+<td align="left">Std.Error</td>
+<td align="right">0.559101</td>
+<td align="right">0.559101</td>
+</tr>
+<tr class="even">
+<td align="left">t.value</td>
+<td align="right">-9.559044</td>
+<td align="right">-9.559044</td>
+</tr>
+<tr class="odd">
+<td align="left">p.value</td>
+<td align="right">0.000000</td>
+<td align="right">0.000000</td>
+</tr>
+</tbody>
+</table>
+<p>Since the function SLM() is coded with Rcpp, the efficiency of the
+function is improved. The SLM() with the RCPP is as efficient as the
+lm() from the base package.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>LM.SLM <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">SLM</span>(x, y))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>Base.lm <span class="ot">&lt;-</span>  <span class="fu">c</span>(b<span class="sc">$</span>coefficients[<span class="dv">1</span>,<span class="dv">1</span>], b<span class="sc">$</span>coefficients[<span class="dv">2</span>,])</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">all.equal</span>(LM.SLM,Base.lm, <span class="at">check.names =</span> F)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">mark</span>(<span class="fu">unname</span>(LM.SLM),<span class="fu">unname</span>(Base.lm))</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loading required namespace: tidyr</span></span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="multiple-linear-regression-with-multilinearregression" class="section level1">
+<h1>Multiple Linear Regression with MultiLinearRegression()</h1>
+<p>In case where we have more than one covariate, we would like to apply
+the function MultiLinearRegression(). This function utilize the Cholesky
+Decomposition to solve for the regression model.</p>
+<p>Given the multiple linear regression: <span class="math inline">\(y_{i} = \sum_{j=1}^{p} X_{i} \beta_{j} + intercept
++ \epsilon\)</span></p>
+<p>You will need to input:</p>
+<ul>
+<li>x :A size n x p Design matrix for regression (without
+intercept)<br />
+</li>
+<li>y :A size n vector<br />
+</li>
+<li>int: If this linear regression has intercept? TRUE for has
+intercept, FALSE for no intercept</li>
+</ul>
+<p>The function will return a list containing:</p>
+<ul>
+<li>beta.est :A vector of estimated beta for y ~ x *beta + error<br />
+</li>
+<li>Std.Error :A vector of standard error for each estimate<br />
+</li>
+<li>t.val :A vector of t-statistic for each estimate<br />
+</li>
+<li>p.value :A vector of p-values of each estimate<br />
+</li>
+<li>fitted :A vector of fitted values<br />
+</li>
+<li>SSE :A numeric value for the Sum of squared error of the model<br />
+</li>
+<li>R.square :A numeric value for the R square of the model</li>
+</ul>
+<div id="multilinearregression-example" class="section level2">
+<h2>MultiLinearRegression() Example</h2>
+<p>Suppose you would like to investigate the association of the weight
+of the vehicle (wt) and fuel efficiency (mpg) in the mtcars dataset
+adjusting for performance measure (qsec) and number of cylinders (cyl).
+Assuming all linear regression assumptions hold, then you have:</p>
+<p><span class="math inline">\(mpg = wt * \beta_{1} + qsec*\beta_{2} +
+cyl*\beta_{3} + intercept + \epsilon\)</span></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="do">##Load dataset</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(mtcars[,<span class="fu">c</span>(<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">2</span>)])</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(mtcars<span class="sc">$</span>mpg)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">MultiLinearRegression</span>(x,y,<span class="at">int =</span> T)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>fit</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $beta.est</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -3.0854346 -3.8616401  0.4944817 -0.9277487</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Std.Error</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    wt       qsec        cyl </span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10.0360377  0.9138472  0.3863240  0.6112517 </span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $t.val</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    wt       qsec        cyl </span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.3074355 -4.2256956  1.2799663 -1.5177851 </span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $p.value</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                        wt         qsec          cyl </span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7.591778e-01 5.426835e-05 2.036414e-01 1.323549e-01 </span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $fitted</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                            [,1]</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Mazda RX4             1.7936060</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Mazda RX4 Wag         1.0857975</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Datsun 710            5.8707310</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Hornet 4 Drive        0.9694855</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Hornet Sportabout    -2.9515265</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Valiant               0.4090794</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Duster 360           -4.0370280</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Merc 240D             3.1984336</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Merc 230              4.7868960</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Merc 280             -0.4630926</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Merc 280C            -0.1664036</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Merc 450SE           -5.1964567</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Merc 450SL           -3.7846027</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Merc 450SLC          -3.7798921</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Cadillac Fleetwood   -9.4663927</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Lincoln Continental -10.2174351</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Chrysler Imperial   -10.1101582</span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Fiat 128              6.7593820</span></span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Honda Civic           8.5486839</span></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Toyota Corolla        8.3815078</span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Toyota Corona         6.0030675</span></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Dodge Challenger     -3.3346299</span></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AMC Javelin          -2.7937634</span></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Camaro Z28           -5.2922980</span></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Pontiac Firebird     -4.5006563</span></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Fiat X1-9             7.5008621</span></span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Porsche 914-2         5.6213662</span></span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Lotus Europa          8.1415109</span></span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Ford Pantera L       -3.1549774</span></span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Ferrari Dino          0.7396576</span></span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Maserati Bora        -4.6501853</span></span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Volvo 142E            4.0894317</span></span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $SSE</span></span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 180.6046</span></span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $R.square</span></span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.8396119</span></span></code></pre></div>
+</div>
+<div id="multilinearregression-accurancy-and-efficiency-evalution" class="section level2">
+<h2>MultiLinearRegression() Accurancy and Efficiency Evalution</h2>
+<p>The function MultiLinearRegression() can be compare with the lm()
+function in the Base package.<br />
+Since there are too much variables, we will compare the estimates and
+the fitted values from both models .</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">summary</span>(<span class="fu">lm</span>(y<span class="sc">~</span>x))</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>lmfit <span class="ot">&lt;-</span> <span class="fu">c</span>(b<span class="sc">$</span>coefficients[,<span class="dv">1</span>])</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">unlist</span>(fit<span class="sc">$</span>beta.est), lmfit)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(tab) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;estimates from LM&quot;</span>, <span class="st">&quot;estimates from BASE&quot;</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(tab, <span class="at">caption =</span> <span class="st">&quot;Multiple Linear Regression comparison: LM vs BASE&quot;</span>)</span></code></pre></div>
+<table>
+<caption>Multiple Linear Regression comparison: LM vs BASE</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">estimates from LM</th>
+<th align="right">estimates from BASE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">-3.0854346</td>
+<td align="right">-3.0854346</td>
+</tr>
+<tr class="even">
+<td align="left">xwt</td>
+<td align="right">-3.8616401</td>
+<td align="right">-3.8616401</td>
+</tr>
+<tr class="odd">
+<td align="left">xqsec</td>
+<td align="right">0.4944817</td>
+<td align="right">0.4944817</td>
+</tr>
+<tr class="even">
+<td align="left">xcyl</td>
+<td align="right">-0.9277487</td>
+<td align="right">-0.9277487</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">paste0</span>(<span class="st">&quot;The fitted value from both LM and Base model are the same: &quot;</span>, <span class="fu">all.equal</span>(<span class="fu">unname</span>(<span class="fu">as.vector</span>(fit<span class="sc">$</span>fitted)), <span class="fu">unname</span>(<span class="fu">as.vector</span>(<span class="fu">lm</span>(y<span class="sc">~</span>x)<span class="sc">$</span>fitted))))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;The fitted value from both LM and Base model are the same: TRUE&quot;</span></span></code></pre></div>
+</div>
+<div id="comparing-the-efficiency-of-the-multilinearregression" class="section level2">
+<h2>Comparing the efficiency of the MultiLinearRegression():</h2>
+<p>The MultiLinearRegression() run faster than the lm(), although it
+might not be a fair comparison as the lm() provided more information.
+Therefore, if you would like to calculate estimates with large data set
+with faster computational time. Using MultiLinearRegression() would be a
+good option.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>), <span class="dv">100</span>, <span class="dv">10</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">321</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">mark</span>(<span class="fu">MultiLinearRegression</span>(x,y,<span class="at">int =</span> T), <span class="fu">lm</span>(y<span class="sc">~</span>x), <span class="at">check =</span> F)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="covariance-with-onepasscov" class="section level1">
+<h1>Covariance with OnePassCov()</h1>
+<p>This is a helper function in the package since we would often time
+interested in the covariance between two numeric vector as we are
+building regression model. This function used a one-pass technique to
+improve efficiency.</p>
+<p>Given the formula:<br />
+<span class="math inline">\(cov(x,y) = 1/(n-1) \sum_{i=1}^{n} (x_{i} -
+\overline{x}) + (y_{i} - \overline{y})\)</span></p>
+<p>You will need to input:<br />
+* x :A size n vector<br />
+* y :A size n vector</p>
+<p>The function will return a numeric covariance between the two
+vectors</p>
+<div id="onepasscov-example" class="section level2">
+<h2>OnePassCov() Example</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="do">##Accuracy Evaluation of OnePassCov()</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">321</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>op <span class="ot">=</span> <span class="fu">OnePassCov</span>(x, y)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>op</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.008836394</span></span></code></pre></div>
+</div>
+<div id="onepasscov-accurancy-and-efficiency-evalution" class="section level2">
+<h2>OnePassCov() Accurancy and Efficiency Evalution</h2>
+<p>The function OnePassCov() can be compared with the cov() function in
+the Base package.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="do">##Accuracy Evaluation of OnePassCov()</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">paste0</span>(<span class="st">&quot;The covariance from both LM and Base are the same: &quot;</span>, <span class="fu">all.equal</span>(op, <span class="fu">cov</span>(x,y)))</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;The covariance from both LM and Base are the same: TRUE&quot;</span></span></code></pre></div>
+</div>
+<div id="the-efficiency-of-the-onepasscov" class="section level2">
+<h2>The efficiency of the OnePassCov():</h2>
+<p>comparing with the cov() from base package, the plot below shows that
+the OnePassCov() is not as fast as the cov() from the base package, but
+it is still efficient enough to handle large vectors calculation.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">=</span> <span class="fu">mark</span>(<span class="fu">OnePassCov</span>(x,y), <span class="fu">cov</span>(x,y))</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<p>#Ridge Regression with RidgeRegression()</p>
+<p>RidgeRegression() allows you to perform ridge regression.</p>
+<p>You will need to input:</p>
+<ul>
+<li>x :A size n x p Design matrix for regression (without
+intercept)<br />
+</li>
+<li>y :A size n vector<br />
+</li>
+<li>lambda : A numeric number, tuning parameter of the ridge regression
+model<br />
+</li>
+<li>int: If this Regression has intercept? TRUE for has intercept, FALSE
+for no intercept</li>
+</ul>
+<p>The function will return a vector of estimated beta (to 4 precision)
+of the ridge regression model</p>
+<p>Given the multiple linear regression: <span class="math inline">\(y_{i} = \sum_{j=1}^{p} X_{i} \beta_{j} + intercept
++ \epsilon\)</span><br />
+With ridge regression method, we minimize the penalized residual sum of
+squares: <span class="math inline">\((y - X\beta)^T(y - X\beta) +
+\lambda \beta^T \beta\)</span><br />
+where <span class="math inline">\(\lambda &gt; 0\)</span></p>
+</div>
+<div id="ridgeregression-example" class="section level2">
+<h2>RidgeRegression() Example</h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">500</span>), <span class="dv">100</span>, <span class="dv">5</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">321</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>beta <span class="ot">=</span> <span class="fu">RidgeRegression</span>(x, y, <span class="at">lambda =</span> <span class="fl">0.1</span>, <span class="at">int =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>beta</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         [,1]</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,]  0.0477</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,] -0.1544</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,] -0.0063</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [4,] -0.1239</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [5,] -0.0177</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [6,] -0.1053</span></span></code></pre></div>
+</div>
+<div id="ridgeregression-accurancy-and-efficiency-evalution" class="section level2">
+<h2>RidgeRegression() Accurancy and Efficiency Evalution</h2>
+<p>RidgeRegression function is comparable to the lm.ridge() function in
+MASS package with the 4 precision.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="do">##Accuracy Evaluation of RidgeREgression()</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>beta.ml <span class="ot">&lt;-</span>  <span class="fu">round</span>(<span class="fu">as.numeric</span>(<span class="fu">coefficients</span>(<span class="fu">lm.ridge</span>(y<span class="sc">~</span>x, <span class="at">lambda =</span> <span class="fl">0.1</span>))),<span class="dv">4</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>mat <span class="ot">&lt;-</span> <span class="fu">cbind</span>(beta,beta.ml)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(mat) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Estimates from LM&quot;</span>, <span class="st">&quot;Estimate from MASS&quot;</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(mat, <span class="at">caption =</span> <span class="st">&quot;Ridge Regression estimation comparison: LM vs MASS&quot;</span>)</span></code></pre></div>
+<table>
+<caption>Ridge Regression estimation comparison: LM vs MASS</caption>
+<thead>
+<tr class="header">
+<th align="right">Estimates from LM</th>
+<th align="right">Estimate from MASS</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.0477</td>
+<td align="right">0.0478</td>
+</tr>
+<tr class="even">
+<td align="right">-0.1544</td>
+<td align="right">-0.1544</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.0063</td>
+<td align="right">-0.0063</td>
+</tr>
+<tr class="even">
+<td align="right">-0.1239</td>
+<td align="right">-0.1240</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.0177</td>
+<td align="right">-0.0177</td>
+</tr>
+<tr class="even">
+<td align="right">-0.1053</td>
+<td align="right">-0.1053</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="comparing-the-efficiency-of-ridgeregression" class="section level2">
+<h2>Comparing the efficiency of RidgeRegression():</h2>
+<p>The RidgeRegression() run faster than the lm.ridge(), although it
+might not be a fair comparison as the lm.ridge() provided more
+information. Therefore, if you would like to calculate estimates with
+large data set with faster computational time. Using RidgeRegression()
+would be a good option.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">mark</span>(<span class="fu">RidgeRegression</span>(x, y, <span class="at">lambda =</span> <span class="fl">0.1</span>, <span class="at">int =</span> <span class="cn">TRUE</span>), <span class="fu">lm.ridge</span>(y<span class="sc">~</span>x, <span class="at">lambda =</span> <span class="fl">0.1</span>), <span class="at">check =</span> F)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<div id="end-of-the-document" class="section level3">
+<h3><em>End of the Document</em></h3>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
