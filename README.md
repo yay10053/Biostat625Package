@@ -17,7 +17,7 @@ In the Console, type in the following:
 devtools::install_github("yay10053/Biostat625Package", build_vignettes = TRUE)
 
 # Instruction Content
-You will be able to find a user guide containing the function document, examples, and function accurancy and efficiency comparsion. 
+You will be able to find a Help Pages containing the function document and a User guide containing examples, and function accurancy and efficiency comparsion. 
 In the Console, type in the following:
 
 help(package = "LM")
