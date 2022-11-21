@@ -27,6 +27,14 @@ This documentation will guide you through the detail of them one by one.
 
 
 ```{r setup}
+if (!require("bench")) {
+    install.packages("bench")
+}
+
+if (!require("MASS")) {
+    install.packages("MASS")
+}
+
 library(LM)
 library(knitr)
 library(bench)
